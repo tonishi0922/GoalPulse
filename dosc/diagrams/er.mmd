@@ -1,0 +1,37 @@
+erDiagram
+TEAM ||--o{ MATCH : home
+TEAM ||--o{ MATCH : away
+MATCH ||--o{ EVENT : has
+MATCH ||--o{ NOTIFICATION_LOG : has
+
+
+TEAM {
+int id PK
+string name
+string slug
+}
+MATCH {
+int id PK
+datetime utcKickoff
+string status
+int homeScore
+int awayScore
+string competition
+string broadcast
+}
+EVENT {
+int id PK
+int matchId FK
+int minute
+string type
+string detail
+string player
+string team
+datetime createdAt
+}
+NOTIFICATION_LOG {
+int id PK
+int matchId FK
+string kind
+datetime sentAt
+}
