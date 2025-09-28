@@ -1,0 +1,22 @@
+sequenceDiagram
+autonumber
+participant Cron as Vercel Cron (毎分)
+participant API as /api/cron/live
+participant DB as PostgreSQL
+participant Ext as API-FOOTBALL
+participant LINE as LINE Notify
+
+
+Cron->>API: 実行 (now±3h内の試合を対象)
+API->>DB: 対象Matchを取得（SCHEDULED/LIVE）
+loop 対象Matchごと
+API->>Ext: fixtures?id={fixtureId}
+Ext-->>API: status, score, events[]
+API->>DB: Event.createMany(skipDuplicates)
+API->>DB: 直近90秒の新規Goalを検索
+alt 新規Goalがある
+API->>LINE: 🥅 GOAL! などを送信
+end
+API->>DB: Match.status/score を更新
+end
+API-->>Cron: JSON (処理件数)

@@ -1,0 +1,40 @@
+flowchart TD
+subgraph Client[管理UI（任意）]
+UI[Next.js / Settings&Watchlist]
+end
+
+
+subgraph Backend[Next.js App（Vercel）]
+CRON1[/Cron: kickoff-5m/]
+CRON2[/Cron: live polling/]
+API_FIX[API: /api/cron/fixtures]
+API_NOTI[API: /api/cron/notify]
+API_LIVE[API: /api/cron/live]
+end
+
+
+subgraph Data[DB]
+PG[(PostgreSQL / Supabase)]
+end
+
+
+subgraph External[外部サービス]
+APIF[API-FOOTBALL]
+LINE[LINE Notify]
+end
+
+
+UI -->|登録/閲覧| Backend
+Backend -->|Prisma| PG
+CRON1 --> API_NOTI
+CRON2 --> API_LIVE
+
+
+API_FIX --> APIF
+API_LIVE --> APIF
+API_NOTI --> PG
+API_LIVE --> PG
+
+
+API_NOTI -->|メッセージ| LINE
+API_LIVE -->|メッセージ| LINE
